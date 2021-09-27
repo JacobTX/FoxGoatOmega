@@ -1,0 +1,203 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf500
+{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\b\fs24 \cf0 \ul \ulc0 PythonGUI.py
+\f1\b0 \ulnone \
+\
+from guizero import *\
+import warnings\
+\
+warnings.filterwarnings("ignore")\
+\
+def rules():\
+        Rule=Window(UI,title="Guidelines",bg="red")\
+        S= ''' "Instructions on how to enter equations:"\
+        "1.addition - +"\
+        "2.subtraction - -"\
+        "3.multiplication - *"\
+        "4.division - /"\
+        "5.exponentiation- **"\
+        "6.sine - sin()"\
+        "7.cosine - cos()"\
+        "8.tan - tan()"\
+        "9.logarithm(base e) - log()"\
+        "10.exponential - exp()" '''\
+        I1=Text(Rule,text=S,color="blue")\
+        def xit():\
+            c=Rule.yesno("Exit","Do you wish to exit?")\
+            if c==True:\
+                Rule.hide()\
+            else:\
+                Rule.show()\
+        Exit=PushButton(Rule,command=xit,text="Exit")\
+        \
+def REQS():\
+    from RevEqnSolver import reveqnsolver,xsol\
+    REQS = Window(UI,title="RevEQS")\
+    Entertxt = Text(REQS,text="Enter equation in variable x")\
+    txt = TextBox(REQS,width=45)              #Text box to enter equation\
+    def findfn():\
+        fx=txt.value\
+        reveqnsolver(fx)\
+        if SollistTxt.value=="":\
+                calmsg=REQS.info("RevEQS","Calculating...")\
+        SollistTxt.value=str(xsol)\
+        \
+    SolTxt=Text(REQS,text="Solution set:")\
+    SollistTxt=Text(REQS)\
+    SolveButton=PushButton(REQS,command=findfn,text="Solve")\
+    StoreButton = PushButton(REQS,command=rules,text="Store in Directory")\
+    def reset():\
+        txt.clear()\
+        SollistTxt.clear()\
+    ResetButton=PushButton(REQS,command=reset,text="Reset")\
+    def Return():\
+            c=REQS.yesno("Exit","Do you wish to exit?")\
+            if c==True:\
+                REQS.hide()\
+            else:\
+                REQS.show()\
+    Retbutton=PushButton(REQS,command=Return,text="Return")\
+\
+def EQP():\
+        from EqnPlot import eqnplot\
+        from RevEqnSolver import reveqnsolver,xsol\
+        EQP=Window(UI,title="EqnPlot")\
+        Entertxt2 = Text(EQP,text="Enter equation to plot:")\
+        txt2=TextBox(EQP,width=45)\
+        def plot():\
+                fx2=txt2.value\
+                reveqnsolver(fx2)\
+                xsol2=xsol\
+                eqnplot(fx2,xsol2)\
+        def reset2():\
+                txt2.clear()\
+        def Return():\
+            c=EQP.yesno("Exit","Do you wish to exit?")\
+            if c==True:\
+                EQP.hide()\
+            else:\
+                EQP.show()\
+        \
+        PlotButton=PushButton(EQP,command=plot,text="Plot")\
+        ResetButton=PushButton(EQP,command=reset2,text="Reset")\
+        Retbutton=PushButton(EQP,command=Return,text="Return")\
+        \
+UI=App(title="FoxGoat Omega",layout="grid",bg="silver")\
+WelcBox=Box(UI,grid=[0,1,5,1],border=True)\
+Welctext=Text(WelcBox,text="Welcome to FoxGoat Omega.Please select an option",grid=[2,1],color="red")\
+ButtonBox=Box(UI,grid=[2,3,3,1],border=True)\
+RulesButton=PushButton(ButtonBox,command=rules,text="Guidelines for users",grid=[3,3,1,1],width=20,height=2)\
+REQSButton=PushButton(ButtonBox,command=REQS,text="Solve equations",grid=[4,3,1,1],width=20,height=2)\
+EQPButton=PushButton(ButtonBox,command=EQP,text="Plot graphs",grid=[5,3,1,1],width=20,height=2)\
+UI.display()\
+\
+
+\f0\b \ul RevEqnSolver.py\
+
+\f1\b0 \ulnone import numpy as np\
+import scipy.optimize as sp\
+\
+xsol=[]\
+\
+def reveqnsolver(fx):\
+        xsol.clear()\
+        np.seterr(divide='ignore',invalid='ignore')\
+         #Text box to enter equation \
+        fpro=""\
+\
+        k=0\
+        while k < len(fx):\
+            \
+            if fx[k:k+3]=="sin" and fx[k-3:k]!="np.":\
+                fpro += "np.sin"\
+                k=k+3\
+            elif fx[k:k+3]=="cos" and fx[k-3:k]!="np.":\
+                fpro += "np.cos"\
+                k=k+3\
+            elif fx[k:k+3]=="tan" and fx[k-3:k]!="np.":\
+                fpro += "np.tan"\
+                k=k+3\
+            elif fx[k:k+3]=="log" and fx[k-3:k]!="np.":\
+                fpro += "np.log"\
+                k=k+3\
+            elif fx[k:k+3]=="exp" and fx[k-3:k]!="np.":\
+                fpro += "np.exp"\
+                k=k+3\
+            else:\
+                fpro+= fx[k:k+1]\
+                k=k+1\
+                \
+        x = np.arange(-100,100,0.001)\
+        a=[]  #Pre-Solution set list\
+\
+\
+        def eqn(x):\
+            return eval(fpro)\
+            \
+\
+\
+        try:\
+             for j in range(len(x)-1):\
+                 if (eqn(x[j]))*(eqn(x[j+1]))<=0:\
+                         a.append((x[j]+x[j+1])/2)\
+             for l in a:\
+                     b=sp.fsolve(eqn,l)\
+                     xsol.append(round(b[0],3))\
+             \
+        except:\
+             xsol.append("Invalid")\
+        \
+
+\f0\b \ul EqnPlot.py\
+\
+
+\f1\b0 \ulnone import numpy as np\
+import matplotlib.pyplot as plt\
+\
+\
+def eqnplot(fx2,xsol):\
+     x=np.arange(-100,100,0.001)\
+     \
+     \
+     try:\
+         plt.plot(x,eval(fx2))\
+         plt.plot(x,np.zeros(len(x)),color="green")\
+         plt.plot(np.zeros(len(x)),x,color="green")\
+         plt.xlabel("x")\
+         plt.ylabel("f(x)")\
+         if xsol!=[]:\
+              plt.axis([xsol[0]-1,xsol[-1]+1,-10,10])\
+              plt.scatter(xsol,[0]*len(xsol),marker="o",color="red")\
+              plt.title("Solution(s) found")\
+         else:\
+              plt.xlim([-100,100])\
+              plt.title("No solutions found")\
+         plt.show()\
+     except:\
+         plt.title("No graph available.")\
+         plt.show()\
+\
+\
+\
+\
+        \
+\
+        \
+        \
+\
+\
+\
+\
+\
+         \
+         \
+         \
+\
+\
+\
+}
